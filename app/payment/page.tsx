@@ -207,25 +207,19 @@ export default function PaymentPage() {
               <Label className="text-sm font-medium text-blue-700 mb-1 block">Mode de paiement</Label>
               <div className="grid grid-cols-2 md:flex md:flex-row gap-3 justify-between">
                 {paymentMethods.map((method) => {
-                  const isComingSoon = method.value === "airtel" || method.value === "mtn";
-                  const isSelected = paymentMethod === method.value && !isComingSoon;
+                  const isSelected = paymentMethod === method.value;
                   return (
                     <button
                       key={method.value}
                       type="button"
-                      onClick={() => !isComingSoon && setPaymentMethod(method.value)}
-                      disabled={isComingSoon}
+                      onClick={() => setPaymentMethod(method.value)}
                       className={`relative group flex flex-col items-center justify-center w-28 h-28 md:w-32 md:h-32 bg-white rounded-2xl border-2 shadow transition-all duration-200
-                        ${isComingSoon ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
                         ${isSelected
                           ? 'scale-105 border-4 shadow-2xl bg-gradient-to-br from-blue-700/80 to-blue-400/80 text-white'
                           : 'border-blue-100 hover:border-blue-300'}
                       `}
                       style={{ transition: 'transform 0.15s, box-shadow 0.15s, border-color 0.15s' }}
                     >
-                      {isComingSoon && (
-                        <span className="absolute top-2 left-2 bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full shadow">Disponible très bientôt</span>
-                      )}
                       {isSelected && (
                         <span className="absolute top-2 right-2 bg-blue-900 text-white text-[10px] px-2 py-0.5 rounded-full shadow">Sélectionné</span>
                       )}
