@@ -28,7 +28,9 @@ export default function QRCodeGenerator({ amount, type, message, donorName }: QR
       message: message || "",
       donor: donorName || "Anonyme",
     })
-    const url = `/payment?${params.toString()}`
+    const url = typeof window !== "undefined"
+      ? `${window.location.origin}/payment?${params.toString()}`
+      : `/payment?${params.toString()}`;
     setPaymentUrl(url)
 
     // Générer le QR code sur le canvas
