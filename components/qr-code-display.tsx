@@ -5,7 +5,7 @@ import QRCode from "react-qr-code"
 export default function QRCodeDisplay() {
   const paymentUrl = typeof window !== "undefined"
     ? `${window.location.origin}/payment`
-    : "https://offrande-church.netlify.app/payment";
+    : "https://offrande.netlify.app/payment";
 
   const handleQRClick = () => {
     window.open("/payment", "_blank")

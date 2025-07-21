@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Church, Heart, Home, Gift, ArrowLeft, Shield, CheckCircle, CreditCard, Building } from "lucide-react"
+import { Church, Heart, Home, Gift, ArrowLeft, Shield, CheckCircle, CreditCard, Building, Copy } from "lucide-react"
 import { Montserrat } from "next/font/google"
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "700"] })
@@ -28,6 +28,7 @@ export default function PaymentPage() {
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvc, setCardCvc] = useState("");
   const [cardName, setCardName] = useState("");
+  const [showMobileInfo, setShowMobileInfo] = useState<null | 'airtel' | 'mtn'>(null)
 
   const offeringTypes = [
     { value: "tithe", label: "Dîme", icon: Church, description: "10% de vos revenus" },
@@ -44,6 +45,21 @@ export default function PaymentPage() {
   ]
 
   const quickAmounts = [1000, 2000, 5000, 10000, 20000, 50000]
+
+  const mobileNumbers = {
+    airtel: {
+      number: '05 00 00 00 00',
+      color: 'bg-[#ed1c24] text-white',
+      label: 'Airtel Money',
+      message: "Merci d'envoyer votre offrande via Airtel Money à ce numéro. Après paiement, validez sur cette page."
+    },
+    mtn: {
+      number: '06 00 00 00 00',
+      color: 'bg-[#ffd600] text-black',
+      label: 'MTN Mobile Money',
+      message: "Merci d'envoyer votre offrande via MTN Mobile Money à ce numéro. Après paiement, validez sur cette page."
+    }
+  }
 
   const handleSubmit = async () => {
     setIsProcessing(true)
@@ -79,8 +95,22 @@ export default function PaymentPage() {
                 {donorName && (<div className="flex justify-between"><span>Donateur:</span><span>{donorName}</span></div>)}
               </div>
             </div>
-            <Button className="w-full mb-3 bg-gradient-to-r from-blue-700 to-blue-400" onClick={() => window.close()}>Fermer</Button>
-            <Button variant="outline" className="w-full border-blue-200 text-blue-700" onClick={() => (window.location.href = "/")}>Faire une autre offrande</Button>
+            <Button className="w-full mb-3 bg-gradient-to-r from-blue-700 to-blue-400"
+              onClick={() => {
+                // Efface le token si stocké
+                localStorage.removeItem("token");
+                // Essaie de fermer la fenêtre
+                window.close();
+                // Si la fenêtre ne se ferme pas, redirige vers l'accueil
+                setTimeout(() => {
+                  window.location.href = "/";
+                }, 500);
+              }}>
+              Terminer
+            </Button>
+            <Button variant="outline" className="w-full border-blue-200 text-blue-700" onClick={() => (window.location.href = "/payment")}>
+              Faire une autre offrande
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -259,6 +289,22 @@ export default function PaymentPage() {
                 </div>
               )}
             </div>
+            {/* Affichage du numéro mobile money si Airtel ou MTN sélectionné */}
+            {['airtel', 'mtn'].includes(paymentMethod) && (
+              <div className={`my-4 rounded-xl p-4 flex flex-col items-center border-2 shadow-lg ${mobileNumbers[paymentMethod as 'airtel' | 'mtn'].color} animate-fade-in`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <img src={paymentMethod === 'airtel' ? '/logo-airtel.png' : '/logo-mtn.png'} alt={mobileNumbers[paymentMethod as 'airtel' | 'mtn'].label} className="h-8 w-8 rounded-full bg-white p-1" />
+                  <span className="font-bold text-lg">{mobileNumbers[paymentMethod as 'airtel' | 'mtn'].label}</span>
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl font-mono tracking-widest font-bold">{mobileNumbers[paymentMethod as 'airtel' | 'mtn'].number}</span>
+                  <Button size="icon" variant="ghost" onClick={() => {navigator.clipboard.writeText(mobileNumbers[paymentMethod as 'airtel' | 'mtn'].number)}} title="Copier le numéro">
+                    <Copy className="h-5 w-5" />
+                  </Button>
+                </div>
+                <span className="text-xs text-center font-medium opacity-90">{mobileNumbers[paymentMethod as 'airtel' | 'mtn'].message}</span>
+              </div>
+            )}
             {/* Infos donateur */}
               <div>
               <Label htmlFor="donorName" className="text-sm font-medium text-blue-700">Nom du donateur</Label>
